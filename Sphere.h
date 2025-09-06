@@ -35,6 +35,7 @@ public:
         record.point = ray.at(record.time);
         Vector3D outwardNormal = (record.point - center) / radius;
         record.setFaceNormal(ray, outwardNormal);
+        record.material = material;
 
         return true;
     }
@@ -42,6 +43,7 @@ public:
 private:
     Point3D center;
     double radius;
+    std::shared_ptr<Material> material;
 };
 
 #endif //SPHERE_H

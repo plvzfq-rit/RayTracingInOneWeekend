@@ -17,4 +17,19 @@ public:
     }
 };
 
+class Lambertian : public Material {
+public:
+    Lambertian(const Color& albedo) : albedo(albedo) {}
+
+    bool scatter(const Ray& rayIn, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
+        auto scatterDirection = record.normalVector + randomUnitVector();
+        scattered = Ray(record.point, scatterDirection);
+        attenuation = albedo;
+        return true;
+    }
+
+private:
+    Color albedo;
+};
+
 #endif //MATERIAL_H
