@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include "color.h"
+#include "Vector3D.h"
+
 int main() {
     int imageWidth = 256;
     int imageHeight = 256;
@@ -10,15 +13,8 @@ int main() {
         for (int i = 0; i < imageWidth; i++) {
             std::clog << "\rScanlines remaining: " << (imageHeight - j) << " " << std::flush;
 
-            auto r = double(i) / (imageWidth - 1);
-            auto g = double(j) / (imageHeight - 1);
-            auto b = 0.0;
-
-            int ir = int(r * 255.999);
-            int ig = int(g * 255.999);
-            int ib = int(b * 255.999);
-
-            std::cout << ir << " " << ig << " " << ib << "\n";
+            auto pixelColor = Color(double(i)/(imageWidth-1), double(j)/(imageHeight-1), 0);
+            writeColor(std::cout, pixelColor);
         }
     }
 
