@@ -33,7 +33,8 @@ public:
 
         record.time = root;
         record.point = ray.at(record.time);
-        record.normalVector = (record.point - center) / radius;
+        Vector3D outwardNormal = (record.point - center) / radius;
+        record.setFaceNormal(ray, outwardNormal);
 
         return true;
     }

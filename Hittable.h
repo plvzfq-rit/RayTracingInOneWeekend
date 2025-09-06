@@ -12,6 +12,15 @@ public:
     Point3D point;
     Vector3D normalVector;
     double time;
+    bool isFrontFace;
+
+    void setFaceNormal(const Ray& ray, const Vector3D& outwardNormal) {
+        if (outwardNormal.length() != 1.0) {
+            throw std::invalid_argument("The outward normal vector must be normalized. Was: " + std::to_string(outwardNormal.length()));
+        }
+        isFrontFace = dot(ray.direction(), outwardNormal) < 0;
+        normalVector = isFrontFace ? outwardNormal : -outwardNormal;
+    }
 };
 
 class Hittable {
