@@ -1,23 +1,31 @@
+#include <cmath>
 #include <iostream>
 
 #include "color.h"
 #include "Ray.h"
 #include "Vector3D.h"
 
-bool hitSphere(const Point3D& center, double radius, const Ray& r) {
+double calculateSphereHitTime(const Point3D& center, double radius, const Ray& r) {
     Vector3D oc = center - r.origin();
     auto a = dot(r.direction(), r.direction());
     auto b = -2.0 * dot(r.direction(), oc);
     auto c = dot(oc, oc) - radius * radius;
     auto discriminant = b * b - 4 * a * c;
-    return (discriminant >= 0);
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - std::sqrt(discriminant)) / (2.0 * a);
+    }
 }
 
-Color rayColor(const Ray& r) {
-    if (hitSphere(Point3D(0,0,-1), 0.5, r))
-        return Color(1,0,0);
+Color rayColor(const Ray& ray) {
+    auto sphereContactTime = calculateSphereHitTime(Point3D(0,0,-1), 0.5, ray);
+    if (sphereContactTime > 0.0) {
+        Vector3D normalVector = normalize(ray.at(sphereContactTime) - Vector3D(0,0,-1));
+        return 0.5 * Color(normalVector.x() + 1, normalVector.y() + 1, normalVector.z() + 1);
+    }
 
-    Vector3D unitDirection = normalize(r.direction());
+    Vector3D unitDirection = normalize(ray.direction());
     auto BLUE_WEIGHT = 0.5 * (unitDirection.y() + 1.0);
     auto WHITE_WEIGHT = 1 - BLUE_WEIGHT;
     auto WHITE = Color(1.0, 1.0, 1.0);
