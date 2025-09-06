@@ -13,6 +13,7 @@ public:
     double ASPECT_RATIO = 1.0;
     int IMAGE_WIDTH = 100;
     int SAMPLES_PER_PIXEL = 10;
+    int MAX_DEPTH = 10;
 
     void render(const Hittable& world) {
         initialize();
@@ -25,7 +26,7 @@ public:
                 Color pixelColor(0,0,0);
                 for (int sample = 0; sample < SAMPLES_PER_PIXEL; sample++) {
                     Ray ray = getRay(currentColumn, currentRow);
-                    pixelColor += rayColor(ray, world);
+                    pixelColor += rayColor(ray, MAX_DEPTH, world);
                 }
                 writeColor(std::cout, PIXEL_SAMPLES_SCALE * pixelColor);
             }
@@ -78,10 +79,15 @@ private:
         return Vector3D(randomDouble() - 0.5, randomDouble() - 0.5, 0);
     }
 
-    Color rayColor(const Ray& ray, const Hittable& world) const {
+    Color rayColor(const Ray& ray, int depth, const Hittable& world) const {
         HitRecord record;
+        if (depth <= 0) {
+            return Color(0,0,0);
+        }
+
         if (world.hitInTimeRange(ray, Interval(0, INFTY), record)) {
-            return 0.5 * (record.normalVector + Color(1,1,1));
+            Vector3D direction = randomOnHemisphere(record.normalVector);
+            return 0.5 * rayColor(Ray(record.point, direction), depth - 1, world);
         }
 
         Vector3D unitDirection = normalize(ray.direction());

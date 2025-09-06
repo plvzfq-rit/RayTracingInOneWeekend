@@ -8,6 +8,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "math_stuff.h"
+
 class Vector3D {
 public:
     double v[3];
@@ -64,6 +66,14 @@ public:
     double lengthSquared() const {
         return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
     }
+
+    static Vector3D random() {
+        return Vector3D(randomDouble(), randomDouble(), randomDouble());
+    }
+
+    static Vector3D random(double min, double max) {
+        return Vector3D(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
+    }
 };
 
 using Point3D = Vector3D;
@@ -110,6 +120,23 @@ inline Vector3D normalize(const Vector3D& v) {
     return v / v.length();
 }
 
+inline Vector3D randomUnitVector() {
+    while (true) {
+        auto vector = Vector3D::random(-1, 1);
+        auto lengthSquared = vector.lengthSquared();
+        if (1e-160 < lengthSquared && lengthSquared <= 1) {
+            return vector / std::sqrt(lengthSquared);
+        }
+    }
+}
 
+inline Vector3D randomOnHemisphere(const Vector3D& normalVector) {
+    Vector3D onUnitSphere = randomUnitVector();
+    if (dot(onUnitSphere, normalVector) > 0) {
+        return onUnitSphere;
+    } else {
+        return -onUnitSphere;
+    }
+}
 
 #endif //VECTOR3D_H
