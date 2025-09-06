@@ -85,7 +85,7 @@ private:
             return Color(0,0,0);
         }
 
-        if (world.hitInTimeRange(ray, Interval(0, INFTY), record)) {
+        if (world.hitInTimeRange(ray, Interval(0.001, INFTY), record)) {
             Vector3D direction = randomOnHemisphere(record.normalVector);
             return 0.5 * rayColor(Ray(record.point, direction), depth - 1, world);
         }
