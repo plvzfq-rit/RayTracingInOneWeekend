@@ -148,4 +148,11 @@ inline Vector3D reflect(const Vector3D& v, const Vector3D& n) {
     return v - 2 * dot(v,n) * n;
 }
 
+inline Vector3D refract(const Vector3D& uv, const Vector3D& n, double refractiveQuotient) {
+    auto cosineOfRefractionAngle = std::fmin(dot(-uv, n), 1.0);
+    Vector3D rayOutPerpendicular = refractiveQuotient * (uv + cosineOfRefractionAngle * n);
+    Vector3D rayOutParallel = -std::sqrt(std::fabs(1.0 - rayOutPerpendicular.lengthSquared())) * n;
+    return rayOutPerpendicular + rayOutParallel;
+}
+
 #endif //VECTOR3D_H
