@@ -28,14 +28,16 @@ int main() {
 
     Camera camera;
     camera.ASPECT_RATIO = 16.0 / 9.0;
-    camera.IMAGE_WIDTH = 400;
-    camera.SAMPLES_PER_PIXEL = 100;
+    camera.IMAGE_WIDTH = 1200;
+    camera.SAMPLES_PER_PIXEL = 500;
     camera.MAX_DEPTH = 50;
     camera.INTENSITY = 0.5;
     camera.VERTICAL_FIELD_OF_VIEW = 20;
-    camera.LOOK_FROM = Point3D(-2, 2, 1);
-    camera.LOOK_AT = Point3D(0, 0, -1);
+    camera.LOOK_FROM = Point3D(13, 2, 3);
+    camera.LOOK_AT = Point3D(0, 0, 0);
     camera.UP_VECTOR = Vector3D(0, 1, 0);
+    camera.DEFOCUS_ANGLE = 0.6;
+    camera.FOCUS_DISTANCE = 10.0;
     camera.render(world);
 
     return 0;

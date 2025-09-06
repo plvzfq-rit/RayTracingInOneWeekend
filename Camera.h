@@ -22,6 +22,9 @@ public:
     Point3D LOOK_AT = Point3D(0,0,-1);
     Vector3D UP_VECTOR = Vector3D(0,1,0);
 
+    double DEFOCUS_ANGLE = 0;
+    double FOCUS_DISTANCE = 10;
+
     void render(const Hittable& world) {
         initialize();
 
@@ -52,6 +55,8 @@ private:
     Vector3D HORIZONTAL_BASIS_VECTOR;
     Vector3D VERTICAL_BASIS_VECTOR;
     Vector3D DEPTH_BASIS_VECTOR;
+    Vector3D DEFOCUS_DISK_HORIZONTAL;
+    Vector3D DEFOCUS_DISK_VERTICAL;
 
     void initialize() {
         IMAGE_HEIGHT = int(IMAGE_WIDTH / ASPECT_RATIO);
@@ -60,11 +65,10 @@ private:
 
         CAMERA_CENTER = LOOK_FROM;
 
-        auto FOCAL_LENGTH = (LOOK_FROM - LOOK_AT).length();
         auto VFOV_RADIAN = degreesToRadians(VERTICAL_FIELD_OF_VIEW);
         auto h = std::tan(VFOV_RADIAN / 2);
 
-        auto VIEWPORT_HEIGHT = 2.0 * h * FOCAL_LENGTH;
+        auto VIEWPORT_HEIGHT = 2.0 * h * FOCUS_DISTANCE;
         auto VIEWPORT_WIDTH = VIEWPORT_HEIGHT * (double(IMAGE_WIDTH) / IMAGE_HEIGHT);
 
         DEPTH_BASIS_VECTOR = normalize(LOOK_FROM - LOOK_AT);
@@ -78,9 +82,13 @@ private:
         VERTICAL_PIXEL_CHANGE = VIEWPORT_VERTICAL / IMAGE_HEIGHT;
 
         auto VIEWPORT_UPPER_LEFT = CAMERA_CENTER -
-            (FOCAL_LENGTH * DEPTH_BASIS_VECTOR) - VIEWPORT_HORIZONTAL / 2 - VIEWPORT_VERTICAL / 2;
+            (FOCUS_DISTANCE * DEPTH_BASIS_VECTOR) - VIEWPORT_HORIZONTAL / 2 - VIEWPORT_VERTICAL / 2;
 
         FIRST_PIXEL_LOCATION = VIEWPORT_UPPER_LEFT + 0.5 * (HORIZONTAL_PIXEL_CHANGE + VERTICAL_PIXEL_CHANGE);
+
+        auto DEFOCUS_RADIUS = FOCUS_DISTANCE * std::tan(degreesToRadians(DEFOCUS_ANGLE / 2));
+        DEFOCUS_DISK_HORIZONTAL = HORIZONTAL_BASIS_VECTOR * DEFOCUS_RADIUS;
+        DEFOCUS_DISK_VERTICAL = VERTICAL_BASIS_VECTOR * DEFOCUS_RADIUS;
     }
 
     Ray getRay(int i, int j) {
@@ -89,13 +97,18 @@ private:
             ((i + offset.x()) * HORIZONTAL_PIXEL_CHANGE) +
                 ((j + offset.y()) * VERTICAL_PIXEL_CHANGE);
 
-        auto rayOrigin = CAMERA_CENTER;
+        auto rayOrigin = (DEFOCUS_ANGLE <= 0)? CAMERA_CENTER : defocusDiskSample();
         auto rayDirection = pixelSample - rayOrigin;
         return Ray(rayOrigin, rayDirection);
     }
 
     Vector3D sampleSquare() const {
         return Vector3D(randomDouble() - 0.5, randomDouble() - 0.5, 0);
+    }
+
+    Point3D defocusDiskSample() const {
+        auto point = randomInUnitDisk();
+        return CAMERA_CENTER + (point[0] * DEFOCUS_DISK_HORIZONTAL) + (point[1] * DEFOCUS_DISK_VERTICAL);
     }
 
     Color rayColor(const Ray& ray, int depth, const Hittable& world) const {
