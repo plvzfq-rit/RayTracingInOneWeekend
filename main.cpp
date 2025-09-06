@@ -4,7 +4,19 @@
 #include "Ray.h"
 #include "Vector3D.h"
 
+bool hitSphere(const Point3D& center, double radius, const Ray& r) {
+    Vector3D oc = center - r.origin();
+    auto a = dot(r.direction(), r.direction());
+    auto b = -2.0 * dot(r.direction(), oc);
+    auto c = dot(oc, oc) - radius * radius;
+    auto discriminant = b * b - 4 * a * c;
+    return (discriminant >= 0);
+}
+
 Color rayColor(const Ray& r) {
+    if (hitSphere(Point3D(0,0,-1), 0.5, r))
+        return Color(1,0,0);
+
     Vector3D unitDirection = normalize(r.direction());
     auto BLUE_WEIGHT = 0.5 * (unitDirection.y() + 1.0);
     auto WHITE_WEIGHT = 1 - BLUE_WEIGHT;
