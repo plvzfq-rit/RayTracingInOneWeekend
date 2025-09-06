@@ -125,6 +125,15 @@ inline Vector3D normalize(const Vector3D& v) {
     return v / v.length();
 }
 
+inline Vector3D randomInUnitDisk() {
+    while (true) {
+        auto point = Vector3D(randomDouble(-1, 1), randomDouble(-1, 1), 0);
+        if (point.lengthSquared() < 1) {
+            return point;
+        }
+    }
+}
+
 inline Vector3D randomUnitVector() {
     while (true) {
         auto vector = Vector3D::random(-1, 1);
