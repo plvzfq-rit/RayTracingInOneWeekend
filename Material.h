@@ -23,6 +23,11 @@ public:
 
     bool scatter(const Ray& rayIn, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
         auto scatterDirection = record.normalVector + randomUnitVector();
+
+        if (scatterDirection.nearZero()) {
+            scatterDirection = record.normalVector;
+        }
+
         scattered = Ray(record.point, scatterDirection);
         attenuation = albedo;
         return true;
