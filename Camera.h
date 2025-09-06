@@ -12,6 +12,8 @@ class Camera {
 public:
     double ASPECT_RATIO = 1.0;
     int IMAGE_WIDTH = 100;
+    int SAMPLES_PER_PIXEL = 10;
+
     void render(const Hittable& world) {
         initialize();
 
@@ -20,12 +22,12 @@ public:
         for (int currentRow = 0; currentRow < IMAGE_HEIGHT; currentRow++) {
             std::clog << "\rScanlines remaining: " << (IMAGE_HEIGHT - currentRow) << " " << std::flush;
             for (int currentColumn = 0; currentColumn < IMAGE_WIDTH; currentColumn++) {
-                auto pixelCenter = FIRST_PIXEL_LOCATION + (currentColumn * HORIZONTAL_PIXEL_CHANGE) + (currentRow * VERTICAL_PIXEL_CHANGE);
-                auto rayDirection = pixelCenter - CAMERA_CENTER;
-                Ray r(CAMERA_CENTER, rayDirection);
-
-                Color pixelColor = rayColor(r, world);
-                writeColor(std::cout, pixelColor);
+                Color pixelColor(0,0,0);
+                for (int sample = 0; sample < SAMPLES_PER_PIXEL; sample++) {
+                    Ray ray = getRay(currentColumn, currentRow);
+                    pixelColor += rayColor(ray, world);
+                }
+                writeColor(std::cout, PIXEL_SAMPLES_SCALE * pixelColor);
             }
         }
 
@@ -34,6 +36,7 @@ public:
 
 private:
     int IMAGE_HEIGHT;
+    double PIXEL_SAMPLES_SCALE;
     Point3D CAMERA_CENTER;
     Point3D FIRST_PIXEL_LOCATION;
     Vector3D HORIZONTAL_PIXEL_CHANGE;
@@ -42,6 +45,7 @@ private:
     void initialize() {
         IMAGE_HEIGHT = int(IMAGE_WIDTH / ASPECT_RATIO);
         IMAGE_HEIGHT = (IMAGE_HEIGHT < 1) ? 1 : IMAGE_HEIGHT;
+        PIXEL_SAMPLES_SCALE = 1.0 / SAMPLES_PER_PIXEL;
         auto FOCAL_LENGTH = 1.0;
         auto VIEWPORT_HEIGHT = 2.0;
         auto VIEWPORT_WIDTH = VIEWPORT_HEIGHT * (double(IMAGE_WIDTH) / IMAGE_HEIGHT);
@@ -57,6 +61,21 @@ private:
             Vector3D(0,0,FOCAL_LENGTH) - VIEWPORT_HORIZONTAL / 2 - VIEWPORT_VERTICAL / 2;
 
         FIRST_PIXEL_LOCATION = VIEWPORT_UPPER_LEFT + 0.5 * (HORIZONTAL_PIXEL_CHANGE + VERTICAL_PIXEL_CHANGE);
+    }
+
+    Ray getRay(int i, int j) {
+        auto offset = sampleSquare();
+        auto pixelSample = FIRST_PIXEL_LOCATION +
+            ((i + offset.x()) * HORIZONTAL_PIXEL_CHANGE) +
+                ((j + offset.y()) * VERTICAL_PIXEL_CHANGE);
+
+        auto rayOrigin = CAMERA_CENTER;
+        auto rayDirection = pixelSample - rayOrigin;
+        return Ray(rayOrigin, rayDirection);
+    }
+
+    Vector3D sampleSquare() const {
+        return Vector3D(randomDouble() - 0.5, randomDouble() - 0.5, 0);
     }
 
     Color rayColor(const Ray& ray, const Hittable& world) const {
