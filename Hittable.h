@@ -5,13 +5,18 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
+#include <memory>
+
 #include "Interval.h"
 #include "Ray.h"
+
+class Material;
 
 class HitRecord {
 public:
     Point3D point;
     Vector3D normalVector;
+    std::shared_ptr<Material> material;
     double time;
     bool isFrontFace;
 
