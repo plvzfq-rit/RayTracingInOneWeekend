@@ -61,13 +61,28 @@ class Dielectric : public Material {
         double ri = record.isFrontFace? (1.0 / refractionIndex) : refractionIndex;
 
         Vector3D unitDirection = normalize(rayIn.direction());
-        Vector3D refracted = refract(unitDirection, record.normalVector, ri);
+        double cosTheta = std::fmin(dot(-unitDirection, record.normalVector), 1.0);
+        double sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
 
-        scattered = Ray(record.point, refracted);
+        bool cannotRefract = ri * sinTheta > 1.0;
+        Vector3D direction;
+
+        if (cannotRefract || reflectance(cosTheta, ri) > randomDouble()) {
+            direction = reflect(unitDirection, record.normalVector);
+        } else {
+            direction = refract(unitDirection, record.normalVector, ri);
+        }
+        scattered = Ray(record.point, direction);
         return true;
     }
 private:
     double refractionIndex;
+
+    static double reflectance(double cosine, double refractionIndex) {
+        auto r0 = (1 - refractionIndex) / (1 + refractionIndex);
+        r0 = r0 * r0;
+        return r0 + (1- r0) * std::pow((1-cosine), 5);
+    }
 };
 
 #endif //MATERIAL_H
