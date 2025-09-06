@@ -37,4 +37,17 @@ private:
     Color albedo;
 };
 
+class Metal: public Material {
+public:
+    Metal(const Color& albedo) : albedo(albedo) {}
+    bool scatter(const Ray &rayIn, const HitRecord &record, Color &attenuation, Ray &scattered) const override {
+        Vector3D reflected = reflect(rayIn.direction(), record.normalVector);
+        scattered = Ray(record.point, reflected);
+        attenuation = albedo;
+        return true;
+    }
+private:
+    Color albedo;
+};
+
 #endif //MATERIAL_H
