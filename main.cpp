@@ -21,6 +21,7 @@ int main() {
     camera.IMAGE_WIDTH = 400;
     camera.SAMPLES_PER_PIXEL = 100;
     camera.MAX_DEPTH = 50;
+    camera.INTENSITY = 0.5;
 
     camera.render(world);
 

@@ -14,6 +14,7 @@ public:
     int IMAGE_WIDTH = 100;
     int SAMPLES_PER_PIXEL = 10;
     int MAX_DEPTH = 10;
+    double INTENSITY = 1.0;
 
     void render(const Hittable& world) {
         initialize();
@@ -87,7 +88,7 @@ private:
 
         if (world.hitInTimeRange(ray, Interval(0.001, INFTY), record)) {
             Vector3D direction = record.normalVector + randomUnitVector();
-            return 0.5 * rayColor(Ray(record.point, direction), depth - 1, world);
+            return INTENSITY * rayColor(Ray(record.point, direction), depth - 1, world);
         }
 
         Vector3D unitDirection = normalize(ray.direction());
