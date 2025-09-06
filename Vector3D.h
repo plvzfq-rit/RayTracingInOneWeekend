@@ -67,6 +67,11 @@ public:
         return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
     }
 
+    bool nearZero() const {
+        auto TOLERANCE = 1e-8;
+        return (std::fabs(v[0]) < TOLERANCE) && (std::fabs(v[1]) < TOLERANCE) && (std::fabs(v[2]) < TOLERANCE);
+    }
+
     static Vector3D random() {
         return Vector3D(randomDouble(), randomDouble(), randomDouble());
     }
