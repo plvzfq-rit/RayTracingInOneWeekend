@@ -144,4 +144,8 @@ inline Vector3D randomOnHemisphere(const Vector3D& normalVector) {
     }
 }
 
+inline Vector3D reflect(const Vector3D& v, const Vector3D& n) {
+    return v - 2 * dot(v,n) * n;
+}
+
 #endif //VECTOR3D_H
