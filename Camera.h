@@ -7,6 +7,7 @@
 
 #include "color.h"
 #include "Hittable.h"
+#include "Material.h"
 
 class Camera {
 public:
@@ -81,14 +82,19 @@ private:
     }
 
     Color rayColor(const Ray& ray, int depth, const Hittable& world) const {
-        HitRecord record;
         if (depth <= 0) {
             return Color(0,0,0);
         }
 
+        HitRecord record;
+
         if (world.hitInTimeRange(ray, Interval(0.001, INFTY), record)) {
-            Vector3D direction = record.normalVector + randomUnitVector();
-            return INTENSITY * rayColor(Ray(record.point, direction), depth - 1, world);
+            Ray scattered;
+            Color attenuation;
+            if (record.material->scatter(ray, record, attenuation, scattered)) {
+                return attenuation * rayColor(scattered, depth - 1, world);
+            }
+            return Color(0,0,0);
         }
 
         Vector3D unitDirection = normalize(ray.direction());

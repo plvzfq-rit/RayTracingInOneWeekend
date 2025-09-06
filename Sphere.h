@@ -10,7 +10,7 @@
 
 class Sphere: public Hittable {
 public:
-    Sphere(const Point3D& center, double radius): center(center), radius(std::fmax(0, radius)) {}
+    Sphere(const Point3D& center, double radius, std::shared_ptr<Material> material): center(center), radius(std::fmax(0, radius)), material(material) {}
     bool hitInTimeRange(const Ray& ray, Interval timeInterval, HitRecord& record) const override {
         Vector3D oc = center - ray.origin();
         auto a = ray.direction().lengthSquared();
