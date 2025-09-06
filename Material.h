@@ -52,4 +52,22 @@ private:
     double fuzz;
 };
 
+class Dielectric : public Material {
+    public:
+    Dielectric(double refractionIndex) : refractionIndex(refractionIndex) {}
+
+    bool scatter(const Ray &rayIn, const HitRecord &record, Color &attenuation, Ray &scattered) const override {
+        attenuation = Color(1.0, 1.0, 1.0);
+        double ri = record.isFrontFace? (1.0 / refractionIndex) : refractionIndex;
+
+        Vector3D unitDirection = normalize(rayIn.direction());
+        Vector3D refracted = refract(unitDirection, record.normalVector, ri);
+
+        scattered = Ray(record.point, refracted);
+        return true;
+    }
+private:
+    double refractionIndex;
+};
+
 #endif //MATERIAL_H
