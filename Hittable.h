@@ -17,7 +17,7 @@ public:
 class Hittable {
 public:
     virtual ~Hittable() = default;
-    virtual bool hitInTimeRange(const Ray& ray, double minTime, double maxTime, HitRecord& record) = 0;
+    virtual bool hitInTimeRange(const Ray& ray, double minTime, double maxTime, HitRecord& record) const = 0;
 };
 
 #endif //HITTABLE_H
