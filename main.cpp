@@ -8,6 +8,8 @@ int main() {
 
     for (int j = 0; j < imageHeight; j++) {
         for (int i = 0; i < imageWidth; i++) {
+            std::clog << "\rScanlines remaining: " << (imageHeight - j) << " " << std::flush;
+
             auto r = double(i) / (imageWidth - 1);
             auto g = double(j) / (imageHeight - 1);
             auto b = 0.0;
@@ -19,4 +21,7 @@ int main() {
             std::cout << ir << " " << ig << " " << ib << "\n";
         }
     }
+
+    std::clog << "\rDone.                             \n";
+    return 0;
 }
