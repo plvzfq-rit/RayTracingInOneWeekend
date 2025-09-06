@@ -5,6 +5,7 @@
 #include "color.h"
 #include "Hittable.h"
 #include "HittableList.h"
+#include "Material.h"
 #include "math_stuff.h"
 #include "Sphere.h"
 #include "Ray.h"
@@ -13,8 +14,15 @@
 int main() {
     HittableList world;
 
-    world.add(std::make_shared<Sphere>(Point3D(0,0,-1), 0.5));
-    world.add(std::make_shared<Sphere>(Point3D(0,-100.5,-1), 100));
+    auto materialGround = std::make_shared<Lambertian>(Color(0.8, 0.8, 0.0));
+    auto materialCenter = std::make_shared<Lambertian>(Color(0.1, 0.2, 0.5));
+    auto materialLeft = std::make_shared<Metal>(Color(0.8, 0.8, 0.8));
+    auto materialRight = std::make_shared<Metal>(Color(0.8, 0.6, 0.2));
+
+    world.add(std::make_shared<Sphere>(Point3D(0.0,-100.5,-1.0), 100.0, materialGround));
+    world.add(std::make_shared<Sphere>(Point3D(0.0,0.0,-1.2), 0.5, materialCenter));
+    world.add(std::make_shared<Sphere>(Point3D(-1.0,0.0,-1.0), 0.5, materialLeft));
+    world.add(std::make_shared<Sphere>(Point3D(1.0,0.0,-1.0), 0.5, materialRight));
 
     Camera camera;
     camera.ASPECT_RATIO = 16.0 / 9.0;
