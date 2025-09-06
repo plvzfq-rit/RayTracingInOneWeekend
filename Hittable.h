@@ -15,7 +15,8 @@ public:
     bool isFrontFace;
 
     void setFaceNormal(const Ray& ray, const Vector3D& outwardNormal) {
-        if (outwardNormal.length() != 1.0) {
+        const double TOLERANCE = 1e-8;
+        if (std::fabs(outwardNormal.length() - 1.0) > TOLERANCE) {
             throw std::invalid_argument("The outward normal vector must be normalized. Was: " + std::to_string(outwardNormal.length()));
         }
         isFrontFace = dot(ray.direction(), outwardNormal) < 0;

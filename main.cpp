@@ -2,27 +2,17 @@
 #include <iostream>
 
 #include "color.h"
+#include "Hittable.h"
+#include "HittableList.h"
+#include "math_stuff.h"
+#include "Sphere.h"
 #include "Ray.h"
 #include "Vector3D.h"
 
-double calculateSphereHitTime(const Point3D& center, double radius, const Ray& r) {
-    Vector3D oc = center - r.origin();
-    auto a = r.direction().lengthSquared();
-    auto h = dot(r.direction(), oc);
-    auto c = oc.lengthSquared() - radius * radius;
-    auto discriminant = h * h - a * c;
-    if (discriminant < 0) {
-        return -1.0;
-    } else {
-        return (h - std::sqrt(discriminant)) / a;
-    }
-}
-
-Color rayColor(const Ray& ray) {
-    auto sphereContactTime = calculateSphereHitTime(Point3D(0,0,-1), 0.5, ray);
-    if (sphereContactTime > 0.0) {
-        Vector3D normalVector = normalize(ray.at(sphereContactTime) - Vector3D(0,0,-1));
-        return 0.5 * Color(normalVector.x() + 1, normalVector.y() + 1, normalVector.z() + 1);
+Color rayColor(const Ray& ray, const Hittable& world) {
+    HitRecord record;
+    if (world.hitInTimeRange(ray, 0, INFTY, record)) {
+        return 0.5 * (record.normalVector + Color(1,1,1));
     }
 
     Vector3D unitDirection = normalize(ray.direction());
@@ -39,6 +29,11 @@ int main() {
 
     int IMAGE_HEIGHT = int(IMAGE_WIDTH / ASPECT_RATIO);
     IMAGE_HEIGHT = (IMAGE_HEIGHT < 1) ? 1 : IMAGE_HEIGHT;
+
+    HittableList world;
+
+    world.add(std::make_shared<Sphere>(Point3D(0,0,-1), 0.5));
+    world.add(std::make_shared<Sphere>(Point3D(0,-100.5,-1), 100));
 
     auto FOCAL_LENGTH = 1.0;
     auto VIEWPORT_HEIGHT = 2.0;
@@ -66,7 +61,7 @@ int main() {
             auto rayDirection = pixelCenter - CAMERA_CENTER;
             Ray r(CAMERA_CENTER, rayDirection);
 
-            Color pixelColor = rayColor(r);
+            Color pixelColor = rayColor(r, world);
             writeColor(std::cout, pixelColor);
         }
     }

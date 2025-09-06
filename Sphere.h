@@ -12,9 +12,9 @@ class Sphere: public Hittable {
 public:
     Sphere(const Point3D& center, double radius): center(center), radius(std::fmax(0, radius)) {}
     bool hitInTimeRange(const Ray& ray, double minTime, double maxTime, HitRecord& record) const override {
-        Vector3D oc = center - r.origin();
-        auto a = r.direction().lengthSquared();
-        auto h = dot(r.direction(), oc);
+        Vector3D oc = center - ray.origin();
+        auto a = ray.direction().lengthSquared();
+        auto h = dot(ray.direction(), oc);
         auto c = oc.lengthSquared() - radius * radius;
         auto discriminant = h * h - a * c;
         if (discriminant < 0) {
