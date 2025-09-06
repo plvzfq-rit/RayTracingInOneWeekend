@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "Interval.h"
 #include "Vector3D.h"
 
 using Color = Vector3D;
@@ -16,9 +17,10 @@ inline void writeColor(std::ostream& os, const Color& color) {
     auto g = color.y();
     auto b = color.z();
 
-    int rByte = int(255.999 * r);
-    int gByte = int(255.999 * g);
-    int bByte = int(255.999 * b);
+    static const Interval intensity(0.0, 0.999);
+    int rByte = int(256 * intensity.clamp(r));
+    int gByte = int(256 * intensity.clamp(g));
+    int bByte = int(256 * intensity.clamp(b));
 
     std::cout << rByte << " " << gByte << " " << bByte << "\n";
 }
