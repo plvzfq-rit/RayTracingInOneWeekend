@@ -5,6 +5,7 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
+#include "Interval.h"
 #include "Ray.h"
 
 class HitRecord {
@@ -27,7 +28,7 @@ public:
 class Hittable {
 public:
     virtual ~Hittable() = default;
-    virtual bool hitInTimeRange(const Ray& ray, double minTime, double maxTime, HitRecord& record) const = 0;
+    virtual bool hitInTimeRange(const Ray& ray, Interval timeInterval, HitRecord& record) const = 0;
 };
 
 #endif //HITTABLE_H

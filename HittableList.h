@@ -27,12 +27,12 @@ public:
         objects.push_back(object);
     }
 
-    bool hitInTimeRange(const Ray& ray, double minTime, double maxTime, HitRecord& record) const override {
+    bool hitInTimeRange(const Ray& ray, Interval timeInterval, HitRecord& record) const override {
         HitRecord tempRecord;
         bool hitAny = false;
-        auto closestSoFar = maxTime;
+        auto closestSoFar = timeInterval.max;
         for (auto& object : objects) {
-            if (object->hitInTimeRange(ray, minTime, closestSoFar, tempRecord)) {
+            if (object->hitInTimeRange(ray, Interval(timeInterval.min, closestSoFar), tempRecord)) {
                 hitAny = true;
                 closestSoFar = tempRecord.time;
                 record = tempRecord;

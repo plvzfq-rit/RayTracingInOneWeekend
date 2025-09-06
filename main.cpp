@@ -11,7 +11,7 @@
 
 Color rayColor(const Ray& ray, const Hittable& world) {
     HitRecord record;
-    if (world.hitInTimeRange(ray, 0, INFTY, record)) {
+    if (world.hitInTimeRange(ray, Interval(0, INFTY), record)) {
         return 0.5 * (record.normalVector + Color(1,1,1));
     }
 
